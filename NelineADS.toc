@@ -1,0 +1,11 @@
+\beamer@endinputifotherversion {3.36pt}
+\beamer@sectionintoc {1}{Introduction}{3}{0}{1}
+\beamer@subsectionintoc {1}{1}{Introduction to Protected Module Architectures}{4}{0}{1}
+\beamer@subsectionintoc {1}{2}{Introduction to Web Application Security}{5}{0}{1}
+\beamer@sectionintoc {2}{Research so far}{6}{0}{2}
+\beamer@subsectionintoc {2}{1}{Literature (selection)}{7}{0}{2}
+\beamer@subsectionintoc {2}{2}{Publications, Experiments \& Projects}{9}{0}{2}
+\beamer@sectionintoc {3}{Research Plan}{11}{0}{3}
+\beamer@subsectionintoc {3}{1}{Research Plan: Practical}{13}{0}{3}
+\beamer@sectionintoc {4}{Contribution to Bachelor and Master education}{16}{0}{4}
+\beamer@sectionintoc {5}{Planned course units}{18}{0}{5}

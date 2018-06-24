@@ -1,0 +1,49 @@
+\frametitle{Translation: Function call}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+Add arguments/return values to calls\\
+\quad Corresponding to heap chunks
+\end{column}
+\begin{column}{0.42\textwidth}
+\begin{lstlisting}[style=CStyle, captionpos = t]
+int p(int x,int *data)
+//@pre data |-> _;
+//@post data |-> _;
+{$\ldots$}
+\end{lstlisting}
+\end{column}
+\end{columns}
+\vspace{-1em}
+
+\begin{columns}
+\begin{column}{0.15\textwidth}
+\end{column}
+\begin{column}{0.90\textwidth}
+\begin{figure}[h]
+  \centering
+\begin{lstlisting}[style=CStyleOverlay, captionpos = t, firstnumber = 11]
+//@split n[0];
+@@//{c1: n |-> [d] * c3: n+1 |-> [_]_(L-1) * c2: data |-> _}
+int newVal = p(n[0], data);
+//{c1: n |-> [d] * c3: n+1 |-> [_]_(L-1) * c2: data |-> _ * newVal = _}
+@@n[0] = newVal;
+\end{lstlisting}
+\end{figure}
+\end{column}
+\end{columns}
+
+\vspace{-.5em}
+\begin{figure}[h]
+\includegraphics[width=0.07\linewidth]{BlueArrowVertical}
+\end{figure}
+\vspace{-2em}
+
+\begin{center}
+\begin{tabular}{c}
+\begin{lstlisting}[style=CStyleNoNum, captionpos = t]
+{int,int*} p(int x, int data, int* data_cap){...}
+           {newVal,c2} = p(c1[0],data,c2);
+\end{lstlisting}
+\end{tabular}
+\end{center}
+

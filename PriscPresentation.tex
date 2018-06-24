@@ -75,6 +75,8 @@
 
 %\setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
 \setbeamertemplate{blocks}[rounded][shadow=false]
+\setbeamertemplate{section in toc}{\inserttocsectionnumber.~\inserttocsection}
+
 
 }
 
@@ -286,12 +288,39 @@
 
 \makeatother
 
+%gets rid of footer
+%will override 'frame number' instruction above
+%comment out to revert to previous/default definitions
+\setbeamertemplate{footline}{}
+%gets rid of bottom navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+%Gannt chart stuff:
+\usepackage{pgfgantt}
+\usepackage{xparse}
+\usepackage{enumitem}% http://ctan.org/pkg/enumitem
+
+\NewDocumentCommand\textganttbar{O{} O{} mmmm}{%
+    \ganttbar[#1,bar/.append style={alias=tmp}]{#3}{#5}{#6}
+    \node [font=\footnotesize,at={(tmp)},#2]  {#4};
+}
+
+\tikzset{
+  above bar/.style={
+    at={(tmp.north)},anchor=south
+    },
+  below bar/.style={
+    at={(tmp.south)},anchor=north
+    }
+}
+
+
 %----------------------------------------------------------------------------------------
 %	TITLE PAGE
 %----------------------------------------------------------------------------------------
 
-\title[Linear Capability Verification]{Linear capabilities for modular fully-abstract
-compilation of verified code} % The short title appears at the bottom of every slide, the full title is only on the title page
+\title[Linear Capability Verification]{Linear capabilities for fully abstract
+compilation of separation-logic-verified code} % The short title appears at the bottom of every slide, the full title is only on the title page
 
 \author[Thomas Van Strydonck]{\underline{Thomas Van Strydonck} \and Dominique Devriese \and Frank Piessens} % Your name
 \institute[KU Leuven] % Your institution as it will appear on the bottom of every slide, may be shorthand to save space
@@ -304,25 +333,21 @@ KU Leuven \\ % Your institution for the title page
 
 \begin{document}
 
+%Showing off the current section
+\AtBeginSection[]{
+  \begin{frame}{Outline}
+  \small \tableofcontents[currentsection, hideothersubsections]
+  \end{frame} 
+}
+
+%%Start of the presentation
+
 \begin{frame}
 \titlepage % Print the title page as the first slide 
 \end{frame}
 
-%\begin{frame}
-%\frametitle{Overview} % Table of contents slide, comment this block out to remove it
-%\tableofcontents % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
-%\end{frame}
-
-%----------------------------------------------------------------------------------------
-%	PRESENTATION SLIDES
-%----------------------------------------------------------------------------------------
-
-%------------------------------------------------
-%\section{First Section} % Sections can be created in order to organize your presentation into discrete blocks, all sections and subsections are automatically printed in the table of contents as an overview of the talk
-%------------------------------------------------
 \begin{frame}
-\frametitle{Preserving sound modular verification}
-
+\frametitle{Problem: Preserving sound modular verification}
 
 \begin{columns}
 \begin{column}{0.65\textwidth}
@@ -352,6 +377,7 @@ KU Leuven \\ % Your institution for the title page
 \end{column}
 \end{columns}
 \end{frame}
+
 %------------------------------------------------
 
 \begin{frame}
@@ -393,6 +419,42 @@ KU Leuven \\ % Your institution for the title page
  %compiles vf -> uvf
 \end{frame}
 
+\begin{frame}
+\frametitle{Overview} % Table of contents slide, comment this block out to remove it
+\tableofcontents % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
+\end{frame}
+
+\section{Problem context}
+
+\begin{frame}[plain,c]
+%\frametitle{A first slide}
+
+\begin{center}
+\Huge Linear capabilities for\\  fully abstract
+compilation of \textbf{\underline{separation-logic-verified}} code
+\end{center}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Separation Logic} 
+\begin{itemize}
+\item Linear-like logic, contract based (pre-post), sound (proof implies correct), modular (per-module proofs), chunks, notation (grab from later)
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[plain,c]
+%\frametitle{A first slide}
+
+\begin{center}
+\Huge \underline{\textbf{Linear capabilities}} for\\  fully abstract
+compilation of separation-logic-verified code
+\end{center}
+
+\end{frame}
+
+
 %------------------------------------------------
 
 \begin{frame}
@@ -431,6 +493,16 @@ $\Rightarrow$ callers/callees cannot keep copies
 \end{frame}
 
 %------------------------------------------------
+
+
+\begin{frame}[plain,c]
+%\frametitle{A first slide}
+\begin{center}
+\Huge Linear capabilities for\\  \textbf{\underline{fully abstract}}
+compilation of separation-logic-verified code
+\end{center}
+\end{frame}
+
 \begin{frame}
 \frametitle{Relation to \emph{full abstraction}}
  \setbeamercovered{transparent}
@@ -458,6 +530,15 @@ Fully abstract compiler $\Rightarrow$ compiled code upholds contracts\\<2>
 \end{frame}
 
 %------------------------------------------------
+
+\begin{frame}
+\frametitle{Recap}
+Preserving sound, modular verification + The compiler: now comes the example
+\end{frame}
+
+%------------------------------------------------
+\section{Compilation by example}
+
 \begin{frame}[fragile]
 \frametitle{Example program} %Q? zie code: afwijken van C - syntax; eerder in slides ook C-like schrijven? (anders ga je te veel moeten focussen op het low-level verschil tussen een pointer en een reference denk ik)
 Illustrates approach\\
@@ -859,6 +940,7 @@ int p(int x,int *data)
 \end{frame}
 \fi
 %------------------------------------------------
+\iffalse
 \begin{frame}
 \frametitle{Proof: Outline}
 \begin{block}{Full abstraction}
@@ -1182,18 +1264,169 @@ int f(int* a, int b)
 \end{columns}
 
 \end{frame}
+\fi
 %------------------------------------------------
+\section{Conclusion and future work}
+
 \begin{frame}
 \frametitle{Conclusion and future work}
 \begin{itemize}
 \item Compiler from verified C to unverified C with (linear) capabilities 
 \item \textbf{Claim}: Full Abstraction\\
-\qquad$\Rightarrow$ Gave some proof intuition
+%\qquad$\Rightarrow$ Gave some proof intuition
 \item \textbf{State}: \\
-\qquad Correctness: $\sim$ proven\\
- \qquad Security: currently constructing back-translation\\
+\qquad Correctness and security: $\sim$ proven\\
+  \qquad\qquad Technical report is lacking some details\\
+ \qquad Currently writing paper for POPL\\
 \end{itemize}
 \end{frame}
 
+%------------------------------------------------
+\section{ADS progress report}
+
+\begin{frame}
+\frametitle{ADS progress}
+\begin{itemize}
+\item Publications:
+	\begin{itemize}
+	\item Thomas Van Strydonck, Dominique Devriese, Frank Piessens. Linear capabilities for modular fully-abstract compilation of verified code. Peer reviewed extended abstract. Talk at \emph{PRISC 2018}  (Principles of Secure Compilation; a workshop at the ACM-supported \emph{POPL} conference), January 2018.
+	\item POPL 2019 submission currently being written (due 12 July 2018): Thomas Van Strydonck, Dominique Devriese, Frank Piessens. Linear capabilities for fully abstract compilation of separation-logic-verified code.
+	\end{itemize}
+\item The formal course units to be followed during the doctoral training programme:
+	\begin{itemize}
+	\item OPLSS summer school (4sp)
+	\item Intensive academic writing course (SET) (2sp)	
+	\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{ADS progress}
+\begin{itemize}
+\item Current contribution to bachelor and master education (work decided on yearly basis)
+	\begin{itemize}
+	\item Submitted thesis proposal for 2018-2019 (\emph{Developing attestation for capability machines})
+	\item Taught \emph{Modelling of Complex Systems}  exercise sessions
+	\item Supervised \emph{Probleemoplossen en ontwerpen, deel 3} exercise sessions and evaluated students
+	\item Superervised a \emph{Software-ontwerp} project group and aided in oral examination
+	\item Corrected exams for \emph{Methodiek van de informatica}
+	\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{ADS progress}
+\vspace{-.5em}
+\begin{itemize}
+\item A detailed research plan of the doctoral project:
+	\begin{itemize}
+	\item WP1: Fully abstract compilation of verified C (Today's presentation)
+	\item WP2: Extending WP1 towards more realistic settings (Compiling non-annotated code, cooperating with non-compliant code)
+	\item WP3: Fully abstract compilation of Rust
+	\end{itemize}
+\end{itemize}
+
+
+
+\begin{figure}[ht]
+\hspace*{-1cm}
+\scalebox{.5}{
+\makebox[\textwidth][c]{
+     \begin{ganttchart}[%Specs
+     x unit=0.25cm,
+     y unit title=0.5cm,
+     y unit chart=0.7cm,
+     vgrid = {*{10}{gray!40!white,, line width={5mm}},{gray!40!white,, line width={5mm}},{thick,black},*{2}{dashed,gray},gray,*{2}{dashed,gray},gray,*{2}{dashed,gray},gray,*{2}{dashed,gray},{thick,black},*{2}{dashed,gray},gray,*{2}{dashed,gray},gray,*{2}{dashed,gray},gray,*{2}{dashed,gray},{thick,black},*{2}{dashed,gray},gray,*{2}{dashed,gray},gray,*{2}{dashed,gray},gray,*{2}{dashed,gray},{thick,black},*{2}{dashed,gray},gray,*{2}{dashed,gray},gray,*{2}{dashed,gray},gray,*{2}{dashed,gray},{thick,black},},
+     %hgrid,
+     title height=1,
+%     title/.style={fill=none},
+     title label font=\bfseries\footnotesize,
+     bar/.style={fill=blue},
+     bar height=0.7,
+%   progress label text={},
+     group right shift=0,
+     group top shift=0.3,%0.7,
+     %group bottom shift=0.3,%0.7,
+     group height=.3,
+     group peaks width={1},]{1}{60}
+    %labels
+    \ganttset{title/.append style={fill=gray!40!white}}
+    \gantttitle[]{Y0}{12}
+    \ganttset{title/.append style={fill=white}}
+ 
+    \gantttitle[]{Y1}{12}                 % title 2
+    \gantttitle[]{Y2}{12}
+    \gantttitle[]{Y3}{12}                 % title 2
+    \gantttitle[]{Y4}{12} \\              
+	
+    \ganttset{title/.append style={fill=gray!40!white}}	
+	\gantttitle{Q1}{3}                      % title 3
+    \gantttitle{Q2}{3}
+    \gantttitle{Q3}{3}
+    \gantttitle{Q4}{3}
+    \ganttset{title/.append style={fill=white}}
+	
+	\gantttitle{Q1}{3}                      % title 3
+    \gantttitle{Q2}{3}
+    \gantttitle{Q3}{3}
+    \gantttitle{Q4}{3}
+    \gantttitle{Q1}{3}
+    \gantttitle{Q2}{3}
+    \gantttitle{Q3}{3} 
+    \gantttitle{Q4}{3}    
+    \gantttitle{Q1}{3}                      % title 3
+    \gantttitle{Q2}{3}
+    \gantttitle{Q3}{3}
+    \gantttitle{Q4}{3}
+    \gantttitle{Q1}{3}
+    \gantttitle{Q2}{3}
+    \gantttitle{Q3}{3} 
+    \gantttitle{Q4}{3}\\
+    
+    % Setting group if any
+     \ganttset{
+       bar/.append style={draw=black,fill=green!40},
+       group/.append style={draw=black, fill=green!40},} %
+    \ganttgroup{WP1}{1}{42}\\ 
+    \ganttbar{Research}{1}{21}\\
+    \ganttbar[bar/.append style={top color=green!40, bottom color=red!40}]{Bundling}{37}{42}\ganttnewline[black]
+
+     \ganttset{
+       bar/.append style={draw=black,fill=red!40},
+       group/.append style={draw=black, fill=red!40},}
+    \ganttgroup{WP2}{19}{42} \\ 
+    \ganttbar{Research WP2A}{19}{30} \\
+    \ganttbar{Research WP2B}{28}{36} \\
+    \ganttbar[bar/.append style={top color=green!40, bottom color=red!40}]{Bundling}{37}{42}\ganttnewline[black]
+    
+    \ganttset{
+       bar/.append style={draw=black,fill=blue!40},
+       group/.append style={draw=black, fill=blue!40},}
+    \ganttgroup{WP3}{34}{60} \\ 
+    \ganttbar{Research}{34}{54} \ganttnewline[black]
+
+    \ganttset{
+       bar/.append style={draw=black,fill=gray!40},
+       group/.append style={draw=black, fill=gray!40},}
+    \ganttgroup{Reporting}{20}{60} \\ 
+    
+    \ganttbar{Conference publ.}{20}{21} 
+    \ganttbar[inline=true, name = c1,bar inline label node/.style={above=0.3pt,font=\bfseries},bar/.append style={fill=green!40}]{C1}{20}{21} 
+	\ganttbar[inline=true, name = c2,bar inline label node/.style={above=0.3pt,font=\bfseries},bar/.append style={fill=red!40}]{C2}{35}{36}
+	\ganttbar[inline=true, name = c3,bar inline label node/.style={above=0.3pt,font=\bfseries},bar/.append style={fill=blue!40}]{C3}{53}{54}\\
+	 
+    \ganttbar{Journal publ.}{41}{42} 
+    \ganttbar[inline=true, name = j1,bar inline label node/.style={above=0.3pt,font=\bfseries},bar/.append style={top color=green!40, bottom color=red!40}]{J1}{41}{42} 
+	\ganttbar[inline=true, name = j2,bar inline label node/.style={above=0.3pt,font=\bfseries},bar/.append style={fill=blue!40}]{J2}{59}{60}\\
+	 
+	\ganttbar{Thesis text}{55}{60} %\\ 
+
+\end{ganttchart}
+}
+}
+%    \caption{Proposed planning of the PhD project}
+    \label{gchart}
+\end{figure}
+\end{frame}
 
 \end{document}

@@ -1,0 +1,216 @@
+\documentclass{beamer}
+\usetheme{metropolis}           % Use metropolis theme
+\title{ADS presentation}
+\date{\today}
+\author{Neline van Ginkel}
+\institute{Distrinet-iMinds, KU Leuven}
+
+\usepackage{nameref}
+\makeatletter
+\newenvironment<>{sframe}{\begin{frame}{\@currentlabelname}}{\end{frame}}
+\makeatother
+
+
+\begin{document}
+
+  \maketitle
+
+\begin{frame}{Table of Contents}
+     \setbeamertemplate{section in toc}[sections numbered]
+     \setbeamertemplate{subsection in toc}[default]
+    \tableofcontents
+\end{frame}
+
+  \section{Introduction}
+  \subsection{Introduction to Protected Module Architectures}
+  \begin{sframe}
+      \begin{itemize} 
+          \item Current Trusted Computing Base is huge (software \& libraries,
+              OS, hardware)
+          \item Goal: Reduce Trusted Computing Base
+          \item Security Architecture without need to trust OS
+          \item Intel SGX: implementation of PMA on hardware level \\
+              Supports hardware-based attestation \& sealing
+          
+      \end{itemize}
+  \end{sframe}
+  \subsection{Introduction to Web Application Security}
+  \begin{sframe}
+      \begin{itemize}
+          \item Two parts: Server and Client
+          \item Security on server: traditional methods for application security
+          \item Security on client (browser): Same Origin Policy
+          \item Origin: combination of protocol, host and port
+          \item Security in transit: SSL/TLS (HTTPS)
+          \item Client can not be trusted for (correct) execution of code
+              (NoScript, adblocker, XSS)
+      \end{itemize}
+  \end{sframe}
+
+  \section{Research so far}
+
+  \subsection{Literature (selection)}
+
+  \begin{sframe}
+      \begin{itemize}
+            \item Protected Module Architectures
+                \begin{itemize}
+                    \item Protected Software Module Architectures (Strackx et
+                        al.)
+                    \item Innovative Instructions and Software Model for
+                        Isolated Execution (McKeen et al.)
+                    \item Shielding applications from an untrusted cloud
+                        with Haven (Baumann et al.)
+                        \item \dots
+                \end{itemize}
+            \item Formal verification
+                \begin{itemize}
+                    \item Secure Compilation to Modern Processors (Agten et al.)
+                    \item Sound Modular Verification of C Code Executing in
+                        an Unverified Context (Agten et al.)
+                \end{itemize}
+      \end{itemize}
+  \end{sframe}
+
+  \begin{sframe}
+      \begin{itemize}
+            \item Web security
+                \begin{itemize}
+                        \item Towards Tierless Web Development without Tearless
+                            Languages (Philips et al.)
+                        \item NodeSentry: Least-privilege Library Integration
+                            for Server-Side JavaScript (De Groef et al.)
+                        \item Protecting Users by Confining JavaScript with COWL
+                            (Stefan et al.)
+                        \item \dots
+                \end{itemize}
+            \item Low-level side-channel attacks
+                \begin{itemize}
+                        \item Controlled-Channel Attacks: Deterministic Side
+                            Channels for Untrusted Operating Systems (Xu et al.)
+                        \item Predicting Secret Keys Via Branch Prediction
+                            (Ac{\i}i{\c{c}}mez et al.)
+                        \item \dots
+                \end{itemize}
+      \end{itemize}
+
+  \end{sframe}
+
+  \subsection{Publications, Experiments \& Projects}
+
+  \begin{sframe}
+      \begin{itemize}
+          \item Paper: Towards Safe Enclaves (published in HotSpot 2016)
+          \item Journal paper + experiments: Sound Modular Verification of C Code
+              Executing in an Unverified Context (in preparation)
+          \item Project: Tearless (in collaboration with VUB, in progress)
+          \item Experiment: Sidechannel on SGX enclave with power consumption
+              (not accurate enough)
+          \item Experiment: Sidechannel on SGX enclave with branch prediction:
+              \begin{itemize}
+                  \item Only timing (collaboration with Raoul Strackx)
+                  \item Branch Trace Store with ``predicted'' bit
+                  \item Last Branch Record with ``predicted'' bit
+              \end{itemize}
+          \item Experiment: Several small experiments with SGX enclaves:
+              \begin{itemize}
+                      \item Rust code in SGX enclave
+                      \item Testing SGX instructions
+              \end{itemize}
+      \end{itemize}
+  \end{sframe}
+
+  \begin{sframe}
+      \begin{itemize}
+          \item Experiment: Several smaller experiments with web security:
+              \begin{itemize}
+                      \item Working with code from Tearless project
+                      \item Experimenting with CSP
+                      \item Working with nodejs \& meteor
+                      \item Diving into v8 source code
+              \end{itemize}
+      \end{itemize}
+  \end{sframe}
+
+  \section{Research Plan}
+
+  \begin{sframe}
+      \begin{itemize}
+              \item Long-term Goal: Increasing security on the web with
+                  Protected Module Architectures
+              \item Current situation: Code executed at client-side can not
+                  be trusted for sensitive operations (server-side verification
+                  needed)
+              \item Ideally: run calculations client-side without need for
+                  exposing data and/or code with strong guarantees about
+                  correct execution
+              \item Examples:
+                  \begin{itemize}
+                          \item Calculations with sensitive information
+                          \item Improved offline functionality
+                          \item Input validation
+                  \end{itemize}
+      \end{itemize}
+  \end{sframe}
+
+  \subsection{Research Plan: Practical}
+
+  \begin{sframe}
+      \begin{itemize}
+              \item Create a browser extension communicating with an
+                  enclave.\\
+                  {\tiny Google Chrome extension with Native Messaging}
+              \item Load an enclave at the client and let server verify it is
+                  correctly loaded.\\
+                  {\tiny CPU based attestation with Intel SGX}
+              \item Provide an interface to load custom (public) code into the enclave \\
+                  {\tiny Load arbitrary code / interpret/JIT JavaScript / \dots}
+      \end{itemize}
+  \end{sframe}
+  \begin{sframe}
+      \begin{itemize}
+              \item Provide an interface to transfer data into the enclave with
+                  end-to-end encryption \\
+                  {\tiny CPU based sealing with Intel SGX / key exchange
+                  protocol such as Diffie-Hellman}
+              \item Provide an interface for enclaves to communicate with untrusted
+                  JavaScript in browser (ocalls)
+      \end{itemize}
+  \end{sframe}
+  \begin{sframe}
+      \begin{itemize}
+              \item Ensure current web policies are still enforced within browser
+                  extension \\
+                  {\tiny f.e. Same Origin Policy / Content Security Policy /
+                  \dots}
+              \item Define guidelines to write 'safe' API's \\
+                  {\tiny Prevent sidechannels / privacy leaks / \dots to
+                  untrusted context}
+              \item Formulate security guarantees provided by PMA \& infrastructure
+      \end{itemize}
+  \end{sframe}
+
+  \section{Contribution to Bachelor and Master education}
+
+  \begin{sframe}
+      \begin{itemize}
+          \item Development of Secure Software: Project (2015-2016, 2016-2017,
+              \dots)
+          \item Informatica Werktuigen: Exercise Sessions (2015-2016, \dots)
+          \item Design of Software Systems: Project (2015-2016)
+          \item Guiding thesis: Building Memory-Safe SGX Enclaves (2015-2016)
+          \item[]
+          \item Summer school: IPICS 2016
+          \item Distrinet CTF team Hacknam Style: internal workshops
+      \end{itemize}
+  \end{sframe}
+
+  \section{Planned course units}
+  \begin{sframe}
+      \begin{itemize}
+          \item Formal Systems and their Applications
+          \item Academic English: writing skills
+      \end{itemize}
+  \end{sframe}
+
+\end{document}
