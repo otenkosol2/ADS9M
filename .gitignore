@@ -13,4 +13,10 @@ ACM*
 *.fuse*
 *.pdf
 *.dvi
+*.vrb
+*.toc
+*.fuse_*
+*.snm
+*.gz
+*.nav
 /auto/ExtendedAbstract.el
