@@ -436,7 +436,7 @@ compilation of \textbf{\underline{separation-logic-verified}} code
 \end{frame}
 
 
-\begin{frame}
+\begin{frame}[fragile]
 \frametitle{Separation Logic} 
 \begin{itemize}
 \item Substructural logic (linear aspects)
@@ -445,22 +445,28 @@ compilation of \textbf{\underline{separation-logic-verified}} code
 \item Sound %proof implies correct
 \item Modular %per-module proofs
 \end{itemize}
-\item Contract-based, eg. :
-\begin{lstlisting}[style=CStyle, captionpos = t]
-int p(int x,int *data)
-//@pre data |-> _;
-//@post data |-> _;
-{$\ldots$}
+\item Contract-based, eg. :\\
+\begin{columns}%<0>
+\begin{column}{0.55\textwidth}
+\begin{lstlisting}[style=CStylenoNum, captionpos = t, xleftmargin = 4em]
+void p(int x,int *data)
+//@pre data |-> _ * x > 0;
+//@post data |-> x;
+{*data = x}
 \end{lstlisting}
+\end{column}
+\begin{column}{0.45\textwidth}
 Notation:
 \begin{itemize}
-\item $\textcolor{mGreen}{\ast}$, $\textcolor{mGreen}{\mapsto}$ 
+\item $\textcolor{mGreen}{\ast}$, $\textcolor{mGreen}{\mapsto}$ (chunks)
 \item @pre/post: contract
 \end{itemize}
+\end{column}
+\end{columns}
 \item Hoare-logic-style program proofs: $\Rightarrow \triple{P}{c}{Q}$\\
+	\quad Functions: $\triple{@pre}{BODY}{@post}$
 \end{itemize}
 \end{frame}
-
 
 \begin{frame}[plain,c]
 %\frametitle{A first slide}
@@ -544,7 +550,7 @@ Fully abstract compiler $\Rightarrow$ compiled code upholds contracts\\<2>
 %------------------------------------------------
 
 \begin{frame}
-\frametitle{Goal: proving contracts compiled away safely by proving full abstraction}
+\frametitle{Goal: proving that contracts are compiled away safely by proving full abstraction}
  %\setbeamercovered{transparent}
 \begin{columns}%<0>
 \begin{column}{0.45\textwidth}
@@ -939,7 +945,7 @@ int newVal = p(n[0], data);
 
 \end{frame}
 %------------------------------------------------
-\iffalse
+
 %Translation: template
 \begin{frame}[fragile]
 \frametitle{Translation: In-/Outcall}
@@ -948,11 +954,7 @@ int newVal = p(n[0], data);
 \begin{column}{0.55\textwidth}
 \begin{itemize}
 \item In/outcall stub:\\transitions to/from verified module
-\item Functions:
-	\begin{itemize}
-	\item Check linearity of capabilities
-	\item Check any conditions in the contract
-	\end{itemize}
+\item Function: check any (implicit) conditions in the contract
 \end{itemize}
 \end{column}
 \begin{column}{0.42\textwidth}
@@ -979,7 +981,6 @@ int p(int x,int *data)
 	{int result, int* data_cap} = p(x,data,data_cap);
 	
 	assert(cap_address == (intptr_t) data_cap);
-	assert(is_linear(data_cap));
 	
 	return {result, data_cap};
 }
@@ -988,7 +989,7 @@ int p(int x,int *data)
 \end{column}
 \end{columns}
 \end{frame}
-\fi
+
 %------------------------------------------------
 \iffalse
 \begin{frame}
