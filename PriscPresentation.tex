@@ -347,7 +347,7 @@ KU Leuven \\ % Your institution for the title page
 \end{frame}
 
 \begin{frame}
-\frametitle{Problem: Preserving sound modular verification}
+\frametitle{Problem: Preserving verification during compilation}
 
 \begin{columns}
 \begin{column}{0.65\textwidth}
@@ -387,7 +387,7 @@ KU Leuven \\ % Your institution for the title page
 	\begin{block}{Source language}
 	\begin{itemize}
 	\item Regular verified C code
-	\item Separation logic annotated
+	\item \emph{Separation logic} annotated
 		\begin{itemize}
 		\item e.g. VeriFast syntax for concreteness
 		\end{itemize}
@@ -403,7 +403,7 @@ KU Leuven \\ % Your institution for the title page
     \begin{block}{Target language}
 	\begin{itemize}
 	\item Regular unverified C code
-	\item Support for \emph{capabilities} \\(next slide)
+	\item Support for \emph{capabilities} \\
 		\begin{itemize}
 		\item CHERI-inspired 
 		\item Linear capabilities
@@ -439,7 +439,25 @@ compilation of \textbf{\underline{separation-logic-verified}} code
 \begin{frame}
 \frametitle{Separation Logic} 
 \begin{itemize}
-\item Linear-like logic, contract based (pre-post), sound (proof implies correct), modular (per-module proofs), chunks, notation (grab from later)
+\item Substructural logic (linear aspects)
+\item Program verification
+\begin{itemize}
+\item Sound %proof implies correct
+\item Modular %per-module proofs
+\end{itemize}
+\item Contract-based, eg. :
+\begin{lstlisting}[style=CStyle, captionpos = t]
+int p(int x,int *data)
+//@pre data |-> _;
+//@post data |-> _;
+{$\ldots$}
+\end{lstlisting}
+Notation:
+\begin{itemize}
+\item $\textcolor{mGreen}{\ast}$, $\textcolor{mGreen}{\mapsto}$ 
+\item @pre/post: contract
+\end{itemize}
+\item Hoare-logic-style program proofs: $\Rightarrow \triple{P}{c}{Q}$\\
 \end{itemize}
 \end{frame}
 
@@ -504,7 +522,7 @@ compilation of separation-logic-verified code
 \end{frame}
 
 \begin{frame}
-\frametitle{Relation to \emph{full abstraction}}
+\frametitle{Relation to \emph{full abstraction}} %Mention secure compilation?
  \setbeamercovered{transparent}
 \begin{block}{Full abstraction}<1>
 = reflection and preservation of contextual equivalence \\
@@ -513,18 +531,12 @@ compilation of separation-logic-verified code
 &\text{where } x\simeq_{ctx}x'\equiv \forall C: C[x]\Downarrow\ \Leftrightarrow C[x']\Downarrow
 \end{align*}
 $\supseteq$ preservation of integrity and confidentiality \\
+\underline{Intuition}: attacking the compiled code is as hard as attacking the source code %Even though the target language is usually lower level and hence more powerful as an attacker
 \end{block}
 \only<2>{
 \begin{block}{Importance} %Q? or is this too trivial? It was a confusing bit for me at the start
 Fully abstract compiler $\Rightarrow$ compiled code upholds contracts\\<2>
 \end{block}
-\textbf{Related work (Agten et al.)} %Q? maybe leave out? This is super relevant though, and underscores the advantage of fine-grainedness of capabilities wrt PMAs, but not everyone might know this
-\begin{itemize}
-\item Different hardware primitives\\%PMA's instead of capabilities\\
-	$\Rightarrow$ Less fine-grained
-\item Integrity, \emph{not} confidentiality
-
-\end{itemize}
 } 
  %compiles vf -> uvf
 \end{frame}
@@ -532,8 +544,48 @@ Fully abstract compiler $\Rightarrow$ compiled code upholds contracts\\<2>
 %------------------------------------------------
 
 \begin{frame}
-\frametitle{Recap}
-Preserving sound, modular verification + The compiler: now comes the example
+\frametitle{Goal: proving contracts compiled away safely by proving full abstraction}
+ %\setbeamercovered{transparent}
+\begin{columns}%<0>
+\begin{column}{0.45\textwidth}
+	\begin{block}{Source language}
+	\begin{itemize}
+	\item Regular verified C code
+	\item \emph{Separation logic} annotated
+		\begin{itemize}
+		\item e.g. VeriFast syntax for concreteness
+		\end{itemize}
+	\end{itemize}
+	\end{block}
+\end{column}
+\begin{column}{0.08\textwidth}
+	\begin{figure}
+	\includegraphics[width=0.8\linewidth]{BlueArrow}
+	\end{figure}\vspace{-2em}
+	\center \textbf{FA!}
+\end{column}
+\begin{column}{0.45\textwidth}
+    \begin{block}{Target language}
+	\begin{itemize}
+	\item Regular unverified C code
+	\item Support for \emph{capabilities}\\
+		\begin{itemize}
+		\item CHERI-inspired 
+		\item Linear capabilities
+		%\item Sealed capabilities %Q? Do we still need these? e.g. nested arrays wont contain nested capabilities; the nesting of capabilities was only a problem wiht AP's
+		\end{itemize}
+	\end{itemize}
+	\end{block}
+\end{column}
+\end{columns}
+\vspace{1em}
+\textbf{Related work (Agten et al.)} %Q? maybe leave out? This is super relevant though, and underscores the advantage of fine-grainedness of capabilities wrt PMAs, but not everyone might know this
+\begin{itemize}
+\item Different hardware primitives\\%PMA's instead of capabilities\\
+	$\Rightarrow$ Less fine-grained
+\item Integrity, \emph{not} confidentiality
+
+\end{itemize}
 \end{frame}
 
 %------------------------------------------------
@@ -577,8 +629,6 @@ int p(int x, int *data)
 \end{lstlisting}
 \begin{block}{Elements}
 \begin{itemize}
-\item $\textcolor{mGreen}{\ast}$, $\textcolor{mGreen}{\mapsto}$ 
-\item @pre/post: contract
 \item array chunk notation: [$\cdot$]
 \item @split/join: manipulate array chunks
 \end{itemize}
@@ -1266,10 +1316,10 @@ int f(int* a, int b)
 \end{frame}
 \fi
 %------------------------------------------------
-\section{Conclusion and future work}
+\section{Conclusion and progress}
 
 \begin{frame}
-\frametitle{Conclusion and future work}
+\frametitle{Conclusion and progress}
 \begin{itemize}
 \item Compiler from verified C to unverified C with (linear) capabilities 
 \item \textbf{Claim}: Full Abstraction\\
@@ -1321,7 +1371,7 @@ int f(int* a, int b)
 \item A detailed research plan of the doctoral project:
 	\begin{itemize}
 	\item WP1: Fully abstract compilation of verified C (Today's presentation)
-	\item WP2: Extending WP1 towards more realistic settings (Compiling non-annotated code, cooperating with non-compliant code)
+	\item WP2: Extending WP1 to more realistic settings (A: Compiling non-annotated code, B: cooperating with non-compliant code)
 	\item WP3: Fully abstract compilation of Rust
 	\end{itemize}
 \end{itemize}
