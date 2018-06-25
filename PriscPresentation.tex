@@ -180,7 +180,7 @@
     moredelim=**[is][\only<+-+(1)>{\color{black}\lstset{style=highlight}}]{~}{~},
     moredelim=**[is][\only<.(1)>{\color{black}\lstset{style=highlight}}]{@@}{@@},
     moredelim=**[is][\only<6>{\color{black}\lstset{style=highlight}}]{£}{£},
-    moredelim=**[is][\only<7>{\color{black}\lstset{style=highlight}}]{**}{**},
+    moredelim=**[is][\only<6>{\color{black}\lstset{style=highlight}}]{**}{**},
     literate= {|->}{{$\mapsto$}}1 {_L}{{$_L$}}1 {_(L-1)}{{$_{L-1}$}}3,
     escapeinside={µ}{µ},
     %moredelim=**[is][\only<+>{\color{red}}]{@@}{@@},
@@ -370,7 +370,7 @@ KU Leuven \\ % Your institution for the title page
 
 %\setlength{\parskip}{5mm}
 \begin{tikzpicture}
-    \draw[outline] \firstcircle node {Verified Module};
+    \draw[outline] \firstcircle node {Verified Component};
     \draw[outline] \secondcircle node {};
     \node at (0,-1.6) (nodeA) {Context};
 \end{tikzpicture}
@@ -458,11 +458,13 @@ void p(int x,int *data)
 \begin{column}{0.45\textwidth}
 Notation:
 \begin{itemize}
-\item $\textcolor{mGreen}{\ast}$, $\textcolor{mGreen}{\mapsto}$ (chunks)
+\item $\textcolor{mGreen}{\ast}$, $\textcolor{mGreen}{\mapsto}$ (chunk: permission)
 \item @pre/post: contract
+\item Other annotations
 \end{itemize}
 \end{column}
 \end{columns}
+\vspace{1em}
 \item Hoare-logic-style program proofs: $\Rightarrow \triple{P}{c}{Q}$\\
 	\quad Functions: $\triple{@pre}{BODY}{@post}$
 \end{itemize}
@@ -528,20 +530,20 @@ compilation of separation-logic-verified code
 \end{frame}
 
 \begin{frame}
-\frametitle{Relation to \emph{full abstraction}} %Mention secure compilation?
+\frametitle{Full abstraction is sufficient} %Mention secure compilation?
  \setbeamercovered{transparent}
-\begin{block}{Full abstraction}<1>
-= reflection and preservation of contextual equivalence \\
+\begin{block}{Intuition}<1>
+"Attacking the compiled code is as hard as attacking the source code" \\[1em]%Even though the target language is usually lower level and hence more powerful as an attacker
+Fully abstract compiler $\Rightarrow$ compiled code upholds contracts\\
+\end{block}
+\only<2>{
+\begin{block}{Definition of FA} %Q? or is this too trivial? It was a confusing bit for me at the start
+= reflection and preservation of contextual equivalence $\simeq_{ctx}$ \\
 \vspace{-1em}
 \begin{align*}&s\simeq_{ctx}s' \Leftrightarrow [[s]]\simeq_{ctx}[[s']]\\
 &\text{where } x\simeq_{ctx}x'\equiv \forall C: C[x]\Downarrow\ \Leftrightarrow C[x']\Downarrow
 \end{align*}
 $\supseteq$ preservation of integrity and confidentiality \\
-\underline{Intuition}: attacking the compiled code is as hard as attacking the source code %Even though the target language is usually lower level and hence more powerful as an attacker
-\end{block}
-\only<2>{
-\begin{block}{Importance} %Q? or is this too trivial? It was a confusing bit for me at the start
-Fully abstract compiler $\Rightarrow$ compiled code upholds contracts\\<2>
 \end{block}
 } 
  %compiles vf -> uvf
@@ -715,6 +717,7 @@ void array_map(int n[], int *data, int L)
 		~//{c1: n |-> [d] * c3: n+1 |-> [_]_(L-1) * c2: data |-> _ * newVal = _}
 		~@@n[0] = newVal;@@
 		~//{c1: n |-> [newVal] * c3: n+1 |-> [_]_(L-1) * c2: data |-> _}
+		~~//{c1: n |-> [_] * c3: n+1 |-> [_]_(L-1) * c2: data |-> _}
 		~(...)		
 \end{lstlisting}
 \end{figure}
@@ -737,12 +740,11 @@ void array_map(int n[], int *data, int L)
 **//@post n |-> [_]_L * data |-> _;
 **{
 		(...)	µ\Suppressnumberµµ\Reactivatenumber{16}µ
-		~//{c1: n |-> [newVal] * c3: n+1 |-> [_]_(L-1) * c2: data |-> _}
+		~//{c1: n |-> [_] * c3: n+1 |-> [_]_(L-1) * c2: data |-> _}
 		~@@array_map(n+1, data, L-1);
-		@@~//{c1: n |-> [newVal] * c3: n+1 |-> [_]_(L-1) * c2: data |-> _}
+		@@~//{c1: n |-> [_] * c3: n+1 |-> [_]_(L-1) * c2: data |-> _}
 		~@@//@join n (n+1);
-		@@~//{c1: n |-> [newVal,_]_L * c2: data |-> _}
-		~~//{c1: n |-> [_]_L * c2: data |-> _}
+		@@~//{c1: n |-> [_]_L * c2: data |-> _}
 	~}
 	@@return;@@
 	~//{c1: n |-> [_]_L * c2: data |-> _ * result == ()}
@@ -755,7 +757,7 @@ void array_map(int n[], int *data, int L)
 \end{frame}
 %------------------------------------------------
 \begin{frame}[fragile]
-\frametitle{Translation: Intuition}
+\frametitle{Compilation: Intuition}
 \begin{columns}
 \begin{column}{0.6\textwidth}
 \emph{Separation-logic-proof-directed}
@@ -768,7 +770,7 @@ void array_map(int n[], int *data, int L)
 	\end{itemize}
 \item Original pointers become addresses
 	\begin{itemize}
-	\item Regular ints
+	\item Regular ints\footnotemark
 	\item Lose all permission
 	\item Kept for address operations
 	\end{itemize} 
@@ -809,15 +811,17 @@ c1: int* (linear)
 
 \end{column}
 \end{columns}
+
+\footnotetext[1]{This is a slight simplification}
 \end{frame}
 
 %------------------------------------------------
 %Translation: template
 \begin{frame}[fragile]
-\frametitle{Translation: Split/Join}
-Target language built-in functions \emph{split} and \emph{join}.\\
+\frametitle{Compilation: Split/Join}
 Source language split/join\\
-$\Rightarrow$ Target language split/join on corresponding capabilities
+$\Rightarrow$ Target language split/join on corresponding capabilities\\
+Target language built-in functions \emph{split} and \emph{join}.\\
 \vspace{-1em}
 
 \begin{columns}
@@ -854,7 +858,7 @@ $\Rightarrow$ Target language split/join on corresponding capabilities
 %------------------------------------------------
 %Translation: template
 \begin{frame}[fragile]
-\frametitle{Translation: Array operations}
+\frametitle{Compilation: Array operations}
 Source language array mutation/lookup\\
 $\Rightarrow$ Target language mutation/lookup on the corresponding capability
  \vspace{-1em}
@@ -894,11 +898,11 @@ c1[0] = newVal;
 %------------------------------------------------
 %Translation: template
 \begin{frame}[fragile]
-\frametitle{Translation: Function call}
+\frametitle{Compilation: Function call}
 \begin{columns}
 \begin{column}{0.55\textwidth}
 Add arguments/return values to calls\\
-\quad Corresponding to heap chunks
+\quad corresponding to heap chunks
 \end{column}
 \begin{column}{0.42\textwidth}
 \begin{lstlisting}[style=CStyle, captionpos = t]
@@ -948,7 +952,7 @@ int newVal = p(n[0], data);
 
 %Translation: template
 \begin{frame}[fragile]
-\frametitle{Translation: In-/Outcall}
+\frametitle{Compilation: In-/Outcall}
 
 \begin{columns}
 \begin{column}{0.55\textwidth}
@@ -993,7 +997,7 @@ int p(int x,int *data)
 %------------------------------------------------
 \iffalse
 \begin{frame}
-\frametitle{Proof: Outline}
+\frametitle{Compilation: Outline}
 \begin{block}{Full abstraction}
 \vspace{-1em}
 \begin{align*}
@@ -1328,7 +1332,7 @@ int f(int* a, int b)
 \item \textbf{State}: \\
 \qquad Correctness and security: $\sim$ proven\\
   \qquad\qquad Technical report is lacking some details\\
- \qquad Currently writing paper for POPL\\
+ \qquad Currently writing submission for POPL\\
 \end{itemize}
 \end{frame}
 
@@ -1359,8 +1363,9 @@ int f(int* a, int b)
 	\item Submitted thesis proposal for 2018-2019 (\emph{Developing attestation for capability machines})
 	\item Taught \emph{Modelling of Complex Systems}  exercise sessions
 	\item Supervised \emph{Probleemoplossen en ontwerpen, deel 3} exercise sessions and evaluated students
-	\item Superervised a \emph{Software-ontwerp} project group and aided in oral examination
+	\item Supervised a \emph{Software-ontwerp} project group and aided in oral examination
 	\item Corrected exams for \emph{Methodiek van de informatica}
+	\item Exam supervision each semester
 	\end{itemize}
 \end{itemize}
 \end{frame}
